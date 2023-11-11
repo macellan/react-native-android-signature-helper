@@ -1,21 +1,22 @@
 # react-native-android-signature-helper
 
-React Native package for Android app signature helper
+React Native package for Android app signature helper.
 
 ## Installation
 
 ```sh
-npm install react-native-android-signature-helper
+yarn add react-native-android-signature-helper
 ```
 
 ## Usage
 
 ```js
-import { multiply } from 'react-native-android-signature-helper';
+import { getSignatureHash } from 'react-native-android-signature-helper'
 
 // ...
 
-const result = await multiply(3, 7);
+const hash = await getSignatureHash()
+console.log('App Signature Hash: ', hash)
 ```
 
 ## Contributing

@@ -1,0 +1,26 @@
+{
+    "root": true,
+    "extends": ["@react-native", "prettier"],
+    "rules": {
+        "prettier/prettier": [
+            "error",
+            {
+                "arrowParens": "avoid",
+                "bracketSameLine": true,
+                "bracketSpacing": true,
+                "quoteProps": "consistent",
+                "singleQuote": true,
+                "semi": false,
+                "tabWidth": 4,
+                "trailingComma": "es5",
+                "useTabs": false
+            }
+        ],
+        "@typescript-eslint/no-unused-vars": "off",
+        "react-native/no-inline-styles": "off",
+        "no-console": ["warn", { "allow": ["error"] }],
+        "react/no-unstable-nested-components": "off",
+        "no-unused-vars": "error",
+        "@typescript-eslint/consistent-type-imports": "error"
+    }
+}

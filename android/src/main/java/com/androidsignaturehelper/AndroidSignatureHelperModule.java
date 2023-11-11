@@ -8,6 +8,16 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.module.annotations.ReactModule;
 
+import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
+import android.util.Base64;
+import android.util.Log;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 @ReactModule(name = AndroidSignatureHelperModule.NAME)
 public class AndroidSignatureHelperModule extends ReactContextBaseJavaModule {
   public static final String NAME = "AndroidSignatureHelper";
@@ -22,11 +32,24 @@ public class AndroidSignatureHelperModule extends ReactContextBaseJavaModule {
     return NAME;
   }
 
-
-  // Example method
-  // See https://reactnative.dev/docs/native-modules-android
   @ReactMethod
-  public void multiply(double a, double b, Promise promise) {
-    promise.resolve(a * b);
+    public void getSignatureHash(Promise promise) {
+        Context context = getReactApplicationContext();
+
+        try {
+            PackageInfo packageInfo = context.getPackageManager().getPackageInfo(
+                    context.getPackageName(),
+                    PackageManager.GET_SIGNATURES);
+
+            for (Signature signature : packageInfo.signatures) {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                String signatureHash = Base64.encodeToString(md.digest(), Base64.DEFAULT);
+                
+                promise.resolve(signatureHash);
+            }
+        } catch (PackageManager.NameNotFoundException | NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
   }
 }
