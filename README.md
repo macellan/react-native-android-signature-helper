@@ -1,22 +1,39 @@
-# react-native-android-signature-helper
+# @macellan/react-native-android-signature-helper
 
 React Native package for Android app signature helper.
 
 ## Installation
 
 ```sh
-yarn add react-native-android-signature-helper
+yarn add @macellan/react-native-android-signature-helper
 ```
 
 ## Usage
 
-```js
-import { getSignatureHash } from 'react-native-android-signature-helper'
+```tsx
+import * as React from 'react'
+import { Platform, View, Text } from 'react-native'
 
-// ...
+import { getSignatureHash } from '@macellan/react-native-android-signature-helper'
 
-const hash = await getSignatureHash()
-console.log('App Signature Hash: ', hash)
+const App: React.FC = () => {
+    const [hash, setHash] = React.useState<string>('')
+
+    React.useEffect(() => {
+        if (Platform.OS !== 'android') return
+        getSignatureHash().then(hash => {
+            setHash(hash)
+        })
+    }, [])
+
+    return (
+        <View>
+            <Text>App Hash: {hash}</Text>
+        </View>
+    )
+}
+
+export default App
 ```
 
 ## Contributing

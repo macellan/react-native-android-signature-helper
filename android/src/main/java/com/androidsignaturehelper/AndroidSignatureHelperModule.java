@@ -49,7 +49,7 @@ public class AndroidSignatureHelperModule extends ReactContextBaseJavaModule {
                 promise.resolve(signatureHash);
             }
         } catch (PackageManager.NameNotFoundException | NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            promise.reject(e)
         }
   }
 }
