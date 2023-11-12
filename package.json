@@ -1,6 +1,6 @@
 {
     "name": "@macellan/react-native-android-signature-helper",
-    "version": "0.2.2",
+    "version": "0.3.0",
     "description": "React Native package for Android app signature helper.",
     "main": "lib/commonjs/index",
     "module": "lib/module/index",
