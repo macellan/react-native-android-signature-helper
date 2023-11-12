@@ -14,6 +14,8 @@ import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.util.Base64;
 import android.util.Log;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -42,11 +44,18 @@ public class AndroidSignatureHelperModule extends ReactContextBaseJavaModule {
                     PackageManager.GET_SIGNATURES);
 
             for (Signature signature : packageInfo.signatures) {
-                MessageDigest md = MessageDigest.getInstance("SHA");
-                md.update(signature.toByteArray());
-                String signatureHash = Base64.encodeToString(md.digest(), Base64.DEFAULT);
+              String appInfo = context.getPackageName() + " " + signature;
+
+              MessageDigest md = MessageDigest.getInstance("SHA-256");
+              md.update(appInfo.getBytes(StandardCharsets.UTF_8));
+              byte[] hashed = md.digest();
+
+              hashed = Arrays.copyOfRange(hashed, 0, 9);
+
+              String signatureHash = Base64.encodeToString(hashed, Base64.NO_PADDING | Base64.NO_WRAP);
+              signatureHash = signatureHash.substring(0, 11);
                 
-                promise.resolve(signatureHash);
+              promise.resolve(signatureHash);
             }
         } catch (PackageManager.NameNotFoundException | NoSuchAlgorithmException e) {
             promise.reject(e.getMessage());
