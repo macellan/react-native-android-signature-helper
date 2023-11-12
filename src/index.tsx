@@ -16,12 +16,21 @@ const AndroidSignatureHelper = NativeModules.AndroidSignatureHelper
           }
       )
 
-export type GetSignatureHashFunction = () => Promise<string>
+export type GetSignatureHashesFunction = () => Promise<string[]>
+
+export type GetSignatureHashFunction = () => Promise<string | undefined>
+
+export const getSignatureHashes: GetSignatureHashesFunction = async () => {
+    return await AndroidSignatureHelper.getSignatureHashes()
+}
 
 export const getSignatureHash: GetSignatureHashFunction = async () => {
-    return await AndroidSignatureHelper.getSignatureHash()
+    return await getSignatureHashes()
+        .then(hashes => hashes?.[0])
+        .catch(() => undefined)
 }
 
 export default {
     getSignatureHash: getSignatureHash,
+    getSignatureHashes: getSignatureHashes,
 }

@@ -8,24 +8,23 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.module.annotations.ReactModule;
 
-import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.Signature;
-import android.util.Base64;
-import android.util.Log;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
+import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.WritableArray;
+import com.androidsignaturehelper.AppSignatureHelper;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+
 
 @ReactModule(name = AndroidSignatureHelperModule.NAME)
 public class AndroidSignatureHelperModule extends ReactContextBaseJavaModule {
   public static final String NAME = "AndroidSignatureHelper";
 
+  private final ReactApplicationContext reactContext;
+
   public AndroidSignatureHelperModule(ReactApplicationContext reactContext) {
     super(reactContext);
+    this.reactContext = reactContext;
   }
 
   @Override
@@ -35,30 +34,20 @@ public class AndroidSignatureHelperModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-    public void getSignatureHash(Promise promise) {
-        Context context = getReactApplicationContext();
-
-        try {
-            PackageInfo packageInfo = context.getPackageManager().getPackageInfo(
-                    context.getPackageName(),
-                    PackageManager.GET_SIGNATURES);
-
-            for (Signature signature : packageInfo.signatures) {
-              String appInfo = context.getPackageName() + " " + signature;
-
-              MessageDigest md = MessageDigest.getInstance("SHA-256");
-              md.update(appInfo.getBytes(StandardCharsets.UTF_8));
-              byte[] hashed = md.digest();
-
-              hashed = Arrays.copyOfRange(hashed, 0, 9);
-
-              String signatureHash = Base64.encodeToString(hashed, Base64.NO_PADDING | Base64.NO_WRAP);
-              signatureHash = signatureHash.substring(0, 11);
-                
-              promise.resolve(signatureHash);
-            }
-        } catch (PackageManager.NameNotFoundException | NoSuchAlgorithmException e) {
-            promise.reject(e.getMessage());
-        }
+    public void getSignatureHashes(Promise promise) {
+      try {
+        AppSignatureHelper mAppSignatureHelper = new AppSignatureHelper(reactContext);
+        ArrayList<String> list = mAppSignatureHelper.getAppSignatures();
+          String[] stringArray = list.toArray(new String[0]);
+          WritableArray promiseArray=Arguments.createArray();
+          for(int i=0;i<stringArray.length;i++){
+            promiseArray.pushString(stringArray[i]);
+          }
+          
+          promise.resolve(promiseArray);
+      }
+      catch (Error e) {
+        promise.reject(e);
+      }
   }
 }
